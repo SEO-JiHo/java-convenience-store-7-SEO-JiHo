@@ -12,4 +12,12 @@ public class Product {
         this.quantity = quantity;
         this.promotion = promotion;
     }
+
+    public String getStockStatus() {
+        return String.format("- %s %d원 %s %s",
+                name,
+                price,
+                quantity != 0 ? quantity + "개" : "재고 없음",
+                !promotion.equals("null") ? promotion : "");
+    }
 }
