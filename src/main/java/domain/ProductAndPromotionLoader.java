@@ -5,8 +5,7 @@ import validation.Validator;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -15,26 +14,25 @@ public class ProductAndPromotionLoader {
     private static final int PRODUCT_FIELD_COUNT = 4;
     private static final int PROMOTION_FIELD_COUNT = 5;
     private static final String SPLIT_DELIMITER = ",";
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd");
 
-    public List<Product> loadProducts(String filePath) {
+    public Products loadProducts(String filePath) {
         List<Product> products = new ArrayList<>();
 
         for (String line : processFile(filePath)) {
             loadSingleProduct(line, products);
         }
 
-        return products;
+        return new Products(products);
     }
 
-    public List<Promotion> loadPromotions(String filePath) {
+    public Promotions loadPromotions(String filePath) {
         List<Promotion> promotions = new ArrayList<>();
 
         for (String line : processFile(filePath)) {
             loadSinglePromotion(line, promotions);
         }
 
-        return promotions;
+        return new Promotions(promotions);
     }
 
     private List<String> processFile(String filePath) {
@@ -53,7 +51,7 @@ public class ProductAndPromotionLoader {
 
         try {
             Product product = new Product(
-                    field[0], Integer.parseInt(field[1]), Integer.parseInt(field[2]), field[3]);
+                    field[0], Double.parseDouble(field[1]), Integer.parseInt(field[2]), field[3]);
             products.add(product);
         } catch (IllegalArgumentException e) {
             System.out.println("[ERROR] 필드의 값에 오류가 있습니다: " + oneLine);
@@ -66,10 +64,12 @@ public class ProductAndPromotionLoader {
 
         try {
             Promotion promotion = new Promotion(field[0], Integer.parseInt(field[1]), Integer.parseInt(field[2]),
-                    dateFormat.parse(field[3]), dateFormat.parse(field[4]));
+                    LocalDateTime.parse(field[3]), LocalDateTime.parse(field[4]));
             promotions.add(promotion);
-        } catch (IllegalArgumentException | ParseException e) {
+        } catch (IllegalArgumentException e) {
             System.out.println("[ERROR] 필드의 값에 오류가 있습니다: " + oneLine);
         }
     }
+
+
 }
