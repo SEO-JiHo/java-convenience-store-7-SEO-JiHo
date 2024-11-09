@@ -1,47 +1,47 @@
 package domain;
 
-import java.util.ArrayList;
-import java.util.List;
-
 public class PaymentService {
+    private static final double MEMBERSHIP_DISCOUNT_RATE = 0.3;
+    private static final double MEMBERSHIP_DISCOUNT_MAX_AMOUNT = 8000;
     private final Products products;
     private final Order order;
     private final Promotions promotions;
-    private final List<ReceiptLine> receipt = new ArrayList<>();
 
-    public PaymentService(Products products, Order order, Promotions promotions, List<ReceiptLine> receipt) {
+    public PaymentService(Products products, Order order, Promotions promotions) {
         this.products = products;
         this.order = order;
         this.promotions = promotions;
     }
 
-    public double calculateTotalPurchaseAmount() {
+    public void applyPromotion() {
+        order.setOrderItemQuantity(products, promotions);
+    }
+
+    public void adjustStock() {
+        products.setProductQuantity(order);
+    }
+
+    public double totalPurchaseAmount() {
         double totalAmount = 0;
         for (OrderItem item : order.getOrderItems()) {
             double itemPrice = item.getQuantity() * item.getItemPrice(products);
-            receipt.add(new ReceiptLine(item.getName(), item.getQuantity(), itemPrice));
             totalAmount += itemPrice;
         }
 
         return totalAmount;
     }
 
-    public double calculatePromotionalDiscountAmount() {
-        double discountAmount = 0;
+    public double promotionalDiscountAmount() {
+        double PromotionDiscount = 0;
         for (OrderItem item : order.getOrderItems()) {
-            int discountQunatity = promotions.getDiscountQuantityIfApplicable(item.getName());
-            if (discountQunatity > 0) {
-                double itemPrice = item.getItemPrice(products);
-            }
+            double discount = item.getFreeQuantity() * item.getItemPrice(products);
+            PromotionDiscount += discount;
         }
-        return discountAmount;
+        return PromotionDiscount;
     }
 
-//    public double getMembershipDiscountAmount() {
-//        return calculateTotalPurchaseAmount() * 0.3;
-//    }
-//
-//    public double getPaymentAmount() {
-//        return ;
-//    }
+    public double membershipDiscountAmount(double totalAmount, double promotionDiscount) {
+        double discount = (totalAmount - promotionDiscount) * MEMBERSHIP_DISCOUNT_RATE;
+        return Math.min(discount, MEMBERSHIP_DISCOUNT_MAX_AMOUNT);
+    }
 }
