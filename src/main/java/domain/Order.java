@@ -65,4 +65,12 @@ public class Order {
             }
         }
     }
+
+    public int getTotalItemCount() {
+        int totalCount = 0;
+        for (OrderItem item : items) {
+            totalCount += item.getQuantity();
+        }
+        return totalCount;
+    }
 }

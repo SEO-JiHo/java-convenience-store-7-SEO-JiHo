@@ -15,18 +15,18 @@ public class OutputView {
         System.out.println();
     }
 
-    public void printReceipt(Order order, Products products,
-                             double totalAmount, double discountAmount, double membershipDiscount) {
+    public void printReceipt(Order order, Products products, double totalAmount,
+                             double discountAmount, double membershipDiscount, int totalItemCount) {
         printProductPart(order, products);
         printPromotionPart(order);
-        printSummeryPart(totalAmount, discountAmount, membershipDiscount);
+        printSummeryPart(totalAmount, discountAmount, membershipDiscount, totalItemCount);
     }
 
     private void printProductPart(Order order, Products products) {
         System.out.println("\n===========W 편의점=============");
         for (OrderItem item : order.getOrderItems()) {
             double itemTotalPrice = item.getQuantity() * item.getItemPrice(products);
-            System.out.printf("%-10s%s\t%2d\t%,.0f\n",
+            System.out.printf("%-8s%s %2d    %,8.0f\n",
                     item.getName(), addSpaces(item.getName()), item.getQuantity(), itemTotalPrice);
         }
     }
@@ -35,18 +35,20 @@ public class OutputView {
         System.out.println("===========증   정=============");
         for (OrderItem item : order.getOrderItems()) {
             if (item.getFreeQuantity() > 0) {
-                System.out.printf("%-10s%s\t%2d\n", item.getName(), addSpaces(item.getName()), item.getFreeQuantity());
+                System.out.printf("%-8s%s %2d\n", item.getName(), addSpaces(item.getName()), item.getFreeQuantity());
             }
         }
     }
 
-    private void printSummeryPart(double totalAmount, double discountAmount, double membershipDiscount) {
+    private void printSummeryPart(
+            double totalAmount, double discountAmount, double membershipDiscount, int totalItemCount) {
         System.out.println("==============================");
-        System.out.printf("%-10s%s %,.0f\n", "총구매액", addSpaces("총구매액"), totalAmount);
-        System.out.printf("%-10s%s %,.0f\n", "행사할인", addSpaces("행사할인"), -discountAmount);
-        System.out.printf("%-10s%s %,.0f\n", "멤버십할인", addSpaces("멤버십할인"), -membershipDiscount);
-        System.out.printf("%-10s%s %,.0f\n", "내실돈", addSpaces("내실돈"),
-                totalAmount - discountAmount - membershipDiscount);
+        System.out.printf("%-8s%s %2d    %,8.0f\n", "총구매액", addSpaces("총구매액"),
+                totalItemCount, totalAmount);
+        System.out.printf("%-8s%s %2s    %,8.0f\n", "행사할인", addSpaces("행사할인"), "", -discountAmount);
+        System.out.printf("%-8s%s %2s    %,8.0f\n", "멤버십할인", addSpaces("멤버십할인"), "", -membershipDiscount);
+        System.out.printf("%-8s%s %2s    %,7.0f\n", "내실돈", addSpaces("내실돈"),
+                "", totalAmount - discountAmount - membershipDiscount);
     }
 
     private String addSpaces(String itemName) {
