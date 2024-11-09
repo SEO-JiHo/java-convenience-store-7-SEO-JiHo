@@ -31,7 +31,15 @@ public class Promotion {
         return 0;
     }
 
-    public int getBuyQuantity() {
+    public String getName() {
+        return name;
+    }
+
+    public int getPaidQuantity() {
         return paidQuantity;
+    }
+
+    public int getFreeQuantity() {
+        return freeQuantity;
     }
 }

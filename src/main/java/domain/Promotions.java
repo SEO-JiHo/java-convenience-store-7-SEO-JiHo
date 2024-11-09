@@ -9,11 +9,21 @@ public class Promotions {
         this.promotions = promotions;
     }
 
-    public int getDiscountQuantityIfApplicable(String name) {
+    public int getDiscountQuantityIfApplicable(String promotionName) {
         for (Promotion promotion : promotions) {
-            return promotion.discountApplicableQuantity(name);
+            if (promotion.discountApplicableQuantity(promotionName) > 0) {
+                return promotion.discountApplicableQuantity(promotionName);
+            }
         }
-
         return 0;
+    }
+
+    public Promotion getPromotionByName(String promotionName) {
+        for (Promotion promotion : promotions) {
+            if (promotion.getName().equals(promotionName)) {
+                return promotion;
+            }
+        }
+        return null;
     }
 }
