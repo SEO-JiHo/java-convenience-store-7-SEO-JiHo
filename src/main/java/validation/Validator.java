@@ -8,7 +8,7 @@ public class Validator {
     public static String validateWrappedWithBracket(String inputString) {
         if (inputString.charAt(0) != PRODUCT_PREFIX
                 || inputString.charAt(inputString.length()-1) != PRODUCT_SUFFIX) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("[ERROR] 올바르지 않은 형식으로 입력했습니다. 다시 입력해 주세요.");
         }
 
         return inputString.substring(1, inputString.length()-1);
@@ -32,7 +32,7 @@ public class Validator {
 
     public static void validateNotEmptyValue(String string) {
         if (string.isBlank()) {
-            throw new IllegalArgumentException();
+            throw new IllegalArgumentException("[ERROR] 올바르지 않은 형식으로 입력했습니다. 다시 입력해 주세요.");
         }
     }
 }
