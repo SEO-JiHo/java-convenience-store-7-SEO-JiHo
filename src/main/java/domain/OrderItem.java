@@ -1,17 +1,17 @@
 package domain;
 
-import java.util.List;
-
 public class OrderItem {
     private final String name;
-    private final int quantity;
+    private int itemQuantity;
+    private int freeItemQuantity;
     private final Products products;
 
-    public OrderItem(String name, int quantity, Products products) {
-        validateOrderItem();
+    public OrderItem(String name, int itemQuantity, Products products) {
         this.name = name;
-        this.quantity = quantity;
+        this.itemQuantity = itemQuantity;
+        this.freeItemQuantity = 0;
         this.products = products;
+        validateOrderItem();
     }
 
     private void validateOrderItem() {
@@ -19,7 +19,7 @@ public class OrderItem {
             throw new IllegalArgumentException("[ERROR] 존재하지 않는 상품입니다. 다시 입력해 주세요.");
         }
 
-        if (!products.hasSufficientStock(name, quantity)) {
+        if (!products.hasSufficientStock(name, itemQuantity)) {
             throw new IllegalArgumentException("[ERROR] 재고 수량을 초과하여 구매할 수 없습니다. 다시 입력해 주세요.");
         }
     }
@@ -33,6 +33,18 @@ public class OrderItem {
     }
 
     public int getQuantity() {
-        return quantity;
+        return itemQuantity;
+    }
+
+    public int getFreeQuantity() {
+        return freeItemQuantity;
+    }
+
+    public void addFreeItemQuantity(int newFreeQuantity) {
+        this.freeItemQuantity += newFreeQuantity;
+    }
+
+    public void addOrderItemQuantity(int addedQuantity) {
+        this.itemQuantity += addedQuantity;
     }
 }
