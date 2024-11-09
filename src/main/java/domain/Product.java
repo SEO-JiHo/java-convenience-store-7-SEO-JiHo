@@ -2,11 +2,11 @@ package domain;
 
 public class Product {
     private final String name;
-    private final int price;
+    private final double price;
     private int quantity;
     private final String promotion;
 
-    public Product(String name, int price, int quantity, String promotion) {
+    public Product(String name, double price, int quantity, String promotion) {
         this.name = name;
         this.price = price;
         this.quantity = quantity;
@@ -14,7 +14,7 @@ public class Product {
     }
 
     public String getStockStatus() {
-        return String.format("- %s %d원 %s %s",
+        return String.format("- %s %,.0f원 %s %s",
                 name,
                 price,
                 quantity != 0 ? quantity + "개" : "재고 없음",
@@ -25,15 +25,25 @@ public class Product {
         return productName.equals(name);
     }
 
-    public boolean isInStock(int purchaseQuantity) {
-        return (quantity - purchaseQuantity) >= 0;
-    }
-
-    public void reduceStockQuantity(int purchaseQuantity) {
-        quantity -= purchaseQuantity;
+    public int reduceStockQuantity(int purchaseQuantity) {
+        if (quantity >= purchaseQuantity) {
+            quantity -= purchaseQuantity;
+            return 0;
+        }
+        int remaining = purchaseQuantity - quantity;
+        quantity = 0;
+        return remaining;
     }
 
     public int getQuantity() {
         return quantity;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public String getPromotion() {
+        return promotion;
     }
 }
