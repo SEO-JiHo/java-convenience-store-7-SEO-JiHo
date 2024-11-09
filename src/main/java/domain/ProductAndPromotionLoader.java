@@ -5,7 +5,7 @@ import validation.Validator;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -64,7 +64,7 @@ public class ProductAndPromotionLoader {
 
         try {
             Promotion promotion = new Promotion(field[0], Integer.parseInt(field[1]), Integer.parseInt(field[2]),
-                    LocalDateTime.parse(field[3]), LocalDateTime.parse(field[4]));
+                    LocalDate.parse(field[3]), LocalDate.parse(field[4]));
             promotions.add(promotion);
         } catch (IllegalArgumentException e) {
             System.out.println("[ERROR] 필드의 값에 오류가 있습니다: " + oneLine);
