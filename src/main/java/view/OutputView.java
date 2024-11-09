@@ -26,7 +26,8 @@ public class OutputView {
         System.out.println("\n===========W 편의점=============");
         for (OrderItem item : order.getOrderItems()) {
             double itemTotalPrice = item.getQuantity() * item.getItemPrice(products);
-            System.out.printf("%-10s%s\t%2d\t%,.0f\n", item.getName(), addSpaces(item.getName()), item.getQuantity(), itemTotalPrice);
+            System.out.printf("%-10s%s\t%2d\t%,.0f\n",
+                    item.getName(), addSpaces(item.getName()), item.getQuantity(), itemTotalPrice);
         }
     }
 
@@ -44,7 +45,8 @@ public class OutputView {
         System.out.printf("%-10s%s %,.0f\n", "총구매액", addSpaces("총구매액"), totalAmount);
         System.out.printf("%-10s%s %,.0f\n", "행사할인", addSpaces("행사할인"), -discountAmount);
         System.out.printf("%-10s%s %,.0f\n", "멤버십할인", addSpaces("멤버십할인"), -membershipDiscount);
-        System.out.printf("%-10s%s %,.0f\n", "내실돈", addSpaces("내실돈"), totalAmount - discountAmount - membershipDiscount);
+        System.out.printf("%-10s%s %,.0f\n", "내실돈", addSpaces("내실돈"),
+                totalAmount - discountAmount - membershipDiscount);
     }
 
     private String addSpaces(String itemName) {
