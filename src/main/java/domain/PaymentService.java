@@ -14,7 +14,13 @@ public class PaymentService {
     }
 
     public void applyPromotion() {
-        order.setOrderItemQuantity(products, promotions);
+        for (OrderItem item : order.getOrderItems()) {
+            if (products.getPromotionAppliedProductByName(item.getName()) != null) {
+                if (item.applyPromotionToItem(products, promotions)) {
+                    item.setOrderItemQuantity(products, promotions);
+                }
+            }
+        }
     }
 
     public void adjustStock() {
