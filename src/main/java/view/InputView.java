@@ -30,7 +30,7 @@ public class InputView {
     }
 
     public boolean requestApplyMembershipDiscount() {
-        System.out.println("멤버십 할인을 받으시겠습니까? (Y/N)");
+        System.out.println("\n멤버십 할인을 받으시겠습니까? (Y/N)");
         return getYesNoInputRecursive();
     }
 
