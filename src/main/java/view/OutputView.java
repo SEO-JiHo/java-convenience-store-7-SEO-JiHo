@@ -17,15 +17,15 @@ public class OutputView {
 
     public void printReceipt(Order order, Products products, double totalAmount,
                              double discountAmount, double membershipDiscount, int totalItemCount) {
-        printProductPart(order, products);
+        printProductPart(order);
         printPromotionPart(order);
         printSummeryPart(totalAmount, discountAmount, membershipDiscount, totalItemCount);
     }
 
-    private void printProductPart(Order order, Products products) {
+    private void printProductPart(Order order) {
         System.out.println("\n===========W 편의점=============");
         for (OrderItem item : order.getOrderItems()) {
-            double itemTotalPrice = item.getQuantity() * item.getItemPrice(products);
+            double itemTotalPrice = item.getQuantity() * item.getItemPrice();
             System.out.printf("%-8s%s %2d    %,8.0f\n",
                     item.getName(), addSpaces(item.getName()), item.getQuantity(), itemTotalPrice);
         }
