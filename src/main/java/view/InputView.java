@@ -10,6 +10,8 @@ import domain.Products;
 import validation.Validator;
 
 public class InputView {
+    private static final String SPLIT_DELIMITER = ",";
+
     public String getCustomerOrder() {
         System.out.println("구매하실 상품명과 수량을 입력해 주세요. (예: [사이다-2],[감자칩-1])");
         return inputValue();
@@ -37,6 +39,15 @@ public class InputView {
         return getYesNoInputRecursive();
     }
 
+    private boolean getYesNoInputRecursive() {
+        try {
+            return convertYesNoToBoolean(inputValue());
+        } catch (IllegalArgumentException e) {
+            System.out.println("[ERROR] 잘못된 입력입니다. 다시 입력해 주세요.");
+            return getYesNoInputRecursive();
+        }
+    }
+
     public Order getOrder(String input, Products products) {
         List<OrderItem> orders = new ArrayList<>();
         while (true) {
@@ -47,15 +58,6 @@ public class InputView {
                 System.out.println(e.getMessage());
                 input = getCustomerOrder();
             }
-        }
-    }
-
-    private boolean getYesNoInputRecursive() {
-        try {
-            return convertYesNoToBoolean(inputValue());
-        } catch (IllegalArgumentException e) {
-            System.out.println("[ERROR] 잘못된 입력입니다. 다시 입력해 주세요.");
-            return getYesNoInputRecursive();
         }
     }
 
@@ -70,7 +72,7 @@ public class InputView {
     }
 
     public void parseOrderItems(String userInput, List<OrderItem> order, Products products) {
-        String[] parts = userInput.split(",");
+        String[] parts = userInput.split(SPLIT_DELIMITER);
         for (String part : parts) {
             validateAndAddOrderItem(part, order, products);
         }
@@ -79,8 +81,23 @@ public class InputView {
     private void validateAndAddOrderItem(String part, List<OrderItem> orders, Products products) {
         String formattedPart = Validator.validateWrappedWithBracket(part);
         String[] nameAndQuantity = Validator.validateSplittableWithDash(formattedPart);
-        orders.add(createOrderItem(nameAndQuantity, products));
+
+        if (!isItemAlreadyInOrder(orders, nameAndQuantity, products)) {
+            orders.add(createOrderItem(nameAndQuantity, products));
+        }
     }
+
+    private boolean isItemAlreadyInOrder(List<OrderItem> orders, String[] nameAndQuantity, Products products) {
+        for (OrderItem item : orders) {
+            if (item.getName().equals(nameAndQuantity[0])) {
+                item.addOrderItemQuantity(Integer.parseInt(nameAndQuantity[1]));
+                item.validateHasSufficientStock();
+                return true;
+            }
+        }
+        return false;
+    }
+
 
     private OrderItem createOrderItem(String[] nameAndQuantity, Products products) {
         String name = nameAndQuantity[0];
