@@ -71,7 +71,7 @@ public class InputView {
         throw new IllegalArgumentException();
     }
 
-    public void parseOrderItems(String userInput, List<OrderItem> order, Products products) {
+    private void parseOrderItems(String userInput, List<OrderItem> order, Products products) {
         String[] parts = userInput.split(SPLIT_DELIMITER);
         for (String part : parts) {
             validateAndAddOrderItem(part, order, products);

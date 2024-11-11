@@ -11,9 +11,9 @@ import domain.PaymentService;
 public class ConvenienceStore {
     InputView inputView = new InputView();
     OutputView outputView = new OutputView();
+    ProductAndPromotionLoader loader = new ProductAndPromotionLoader();
 
     public void open() {
-        ProductAndPromotionLoader loader = new ProductAndPromotionLoader();
         Products products = loader.loadProducts("src/main/resources/products.md");
         Promotions promotions = loader.loadPromotions("src/main/resources/promotions.md");
         while (true) {
@@ -22,6 +22,7 @@ public class ConvenienceStore {
             if (!inputView.requestAdditionalPurchase()) {
                 break;
             }
+            System.out.println();
         }
     }
 
