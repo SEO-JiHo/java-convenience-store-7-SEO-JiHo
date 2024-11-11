@@ -14,14 +14,17 @@ public class OrderItem {
         this.itemQuantity = itemQuantity;
         this.freeItemQuantity = 0;
         this.products = products;
-        validateOrderItem();
+        validateItemInStock();
+        validateHasSufficientStock();
     }
 
-    private void validateOrderItem() {
+    private void validateItemInStock() {
         if (products.findProductByName(name) == null) {
             throw new IllegalArgumentException("[ERROR] 존재하지 않는 상품입니다. 다시 입력해 주세요.");
         }
+    }
 
+    public void validateHasSufficientStock() {
         if (!products.hasSufficientStock(name, itemQuantity)) {
             throw new IllegalArgumentException("[ERROR] 재고 수량을 초과하여 구매할 수 없습니다. 다시 입력해 주세요.");
         }
