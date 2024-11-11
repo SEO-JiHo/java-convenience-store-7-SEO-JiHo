@@ -1,9 +1,12 @@
 package controller;
 
-import domain.*;
 import view.InputView;
 import view.OutputView;
-
+import domain.Order;
+import domain.ProductAndPromotionLoader;
+import domain.Products;
+import domain.Promotions;
+import domain.PaymentService;
 
 public class ConvenienceStore {
     InputView inputView = new InputView();
@@ -14,7 +17,7 @@ public class ConvenienceStore {
         Products products = loader.loadProducts("src/main/resources/products.md");
         Promotions promotions = loader.loadPromotions("src/main/resources/promotions.md");
         while (true) {
-            Order order = customerPicksItems(products);
+            Order order = customerPick(products);
             processPayment(products, order, promotions);
             if (!inputView.requestAdditionalPurchase()) {
                 break;
@@ -22,7 +25,7 @@ public class ConvenienceStore {
         }
     }
 
-    private Order customerPicksItems(Products products) {
+    private Order customerPick(Products products) {
         outputView.printStockStatus(products);
         String customerOrder = inputView.getCustomerOrder();
 
@@ -37,7 +40,7 @@ public class ConvenienceStore {
         double totalAmount = paymentService.totalPurchaseAmount();
         double promotionalDiscount = paymentService.promotionalDiscountAmount();
         double membershipDiscount = inputView.requestApplyMembershipDiscount()
-                ? paymentService.membershipDiscountAmount(totalAmount, promotionalDiscount) : 0;
+                ? paymentService.membershipDiscountAmount() : 0;
         int totalCount = order.getTotalItemCount();
         outputView.printReceipt(order, products, totalAmount, promotionalDiscount, membershipDiscount, totalCount);
     }

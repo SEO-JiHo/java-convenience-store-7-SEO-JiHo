@@ -1,13 +1,10 @@
 package domain;
 
-import view.InputView;
-
 import java.util.Collections;
 import java.util.List;
 
 public class Order {
     private final List<OrderItem> items;
-    InputView inputView = new InputView();
 
     public Order(List<OrderItem> items) {
         this.items = items;
