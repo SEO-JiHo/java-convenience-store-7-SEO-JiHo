@@ -15,7 +15,7 @@ public class OutputView {
         System.out.println();
     }
 
-    public void printReceipt(Order order, Products products, double totalAmount,
+    public void printReceipt(Order order, double totalAmount,
                              double discountAmount, double membershipDiscount, int totalItemCount) {
         printProductPart(order);
         printPromotionPart(order);
@@ -24,6 +24,8 @@ public class OutputView {
 
     private void printProductPart(Order order) {
         System.out.println("\n===========W 편의점=============");
+        System.out.printf("%-8s%s %2s    %s\n", "상품명", addSpaces("상품명"),"수량", "금액");
+
         for (OrderItem item : order.getOrderItems()) {
             double itemTotalPrice = item.getQuantity() * item.getItemPrice();
             System.out.printf("%-8s%s %2d    %,8.0f\n",

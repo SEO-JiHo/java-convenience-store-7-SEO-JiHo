@@ -43,6 +43,6 @@ public class ConvenienceStore {
         double membershipDiscount = inputView.requestApplyMembershipDiscount()
                 ? paymentService.membershipDiscountAmount() : 0;
         int totalCount = order.getTotalItemCount();
-        outputView.printReceipt(order, products, totalAmount, promotionalDiscount, membershipDiscount, totalCount);
+        outputView.printReceipt(order, totalAmount, promotionalDiscount, membershipDiscount, totalCount);
     }
 }
