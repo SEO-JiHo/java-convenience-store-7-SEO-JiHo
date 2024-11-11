@@ -2,6 +2,8 @@ package store;
 
 import camp.nextstep.edu.missionutils.test.NsTest;
 import org.junit.jupiter.api.Test;
+import org.junit.jupiter.params.ParameterizedTest;
+import org.junit.jupiter.params.provider.ValueSource;
 
 import java.time.LocalDate;
 
@@ -62,7 +64,7 @@ class ApplicationTest extends NsTest {
     }
 
     @Test
-    void 멤버십_할인_적용_테스트() {
+    void 멤버십_할인_정상_적용_테스트() {
         assertSimpleTest(() -> {
             runException("[콜라-3],[에너지바-5]", "Y", "N");
             assertThat(output().replaceAll("\\s", ""))
@@ -85,6 +87,17 @@ class ApplicationTest extends NsTest {
             runException("[오렌지주스-1]", "Y", "Y", "N");
             assertThat(output().replaceAll("\\s", ""))
                     .contains("총구매액23,600행사할인-1,800멤버십할인-0내실돈1,800");
+        });
+    }
+
+    @ParameterizedTest
+    @ValueSource(strings = {
+            "[],[]", ""
+    })
+    void 형식에_어긋나는_값을_입력할_경우_에러_문구_출력(String input) {
+        assertSimpleTest(() -> {
+            run(input, "[사이다-1]", "N", "N");
+            assertThat(output()).contains("[ERROR] 올바르지 않은 형식으로 입력했습니다. 다시 입력해 주세요.");
         });
     }
 
