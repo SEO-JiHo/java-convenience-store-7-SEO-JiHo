@@ -59,7 +59,7 @@ public class OrderItem {
     }
 
     private void handleNoDiscountQuantity(int promotionAppliedQuantity, int paidQuantity, int freeQuantity) {
-        if (itemQuantity > promotionAppliedQuantity) {
+        if (itemQuantity >= promotionAppliedQuantity) {
             int noDiscountQuantity = itemQuantity - promotionAppliedQuantity +
                     promotionAppliedQuantity % (paidQuantity + freeQuantity);
             if (!inputView.requestPurchaseWithoutPromotion(name, noDiscountQuantity)) {
@@ -96,7 +96,12 @@ public class OrderItem {
     }
 
     public double getMembershipEligibleAmount(Promotions promotions) {
-        Promotion promotion = promotions.getPromotionByName(products.getPromotionAppliedProductByName(name).getPromotion());
+        Product product = products.getPromotionAppliedProductByName(name);
+        if (product == null) {
+            return getItemPrice() * itemQuantity;
+        }
+        Promotion promotion =
+                promotions.getPromotionByName(product.getPromotion());
         int paidQuantity = promotion.getPaidQuantity();
         int freeQuantity = promotion.getFreeQuantity();
         return getItemPrice() * (itemQuantity - freeItemQuantity * (paidQuantity + freeQuantity));
