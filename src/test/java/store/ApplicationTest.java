@@ -61,6 +61,33 @@ class ApplicationTest extends NsTest {
         });
     }
 
+    @Test
+    void 멤버십_할인_적용_테스트() {
+        assertSimpleTest(() -> {
+            runException("[콜라-3],[에너지바-5]", "Y", "N");
+            assertThat(output().replaceAll("\\s", ""))
+                    .contains("총구매액813,000행사할인-1,000멤버십할인-3,000내실돈9,000");
+        });
+    }
+
+    @Test
+    void 프로모션_할인이_적용되지_않는_경우_테스트() {
+        assertSimpleTest(() -> {
+            runException("[콜라-3],[에너지바-5]", "N", "Y", "[콜라-10]", "Y", "N", "N");
+            assertThat(output().replaceAll("\\s", ""))
+                    .contains("총구매액1010,000행사할인-2,000");
+        });
+    }
+
+    @Test
+    void 프로모션_할인이_적용되어_사은품을_받을_수_있는_경우_테스트() {
+        assertSimpleTest(() -> {
+            runException("[오렌지주스-1]", "Y", "Y", "N");
+            assertThat(output().replaceAll("\\s", ""))
+                    .contains("총구매액23,600행사할인-1,800멤버십할인-0내실돈1,800");
+        });
+    }
+
     @Override
     public void runMain() {
         Application.main(new String[]{});
