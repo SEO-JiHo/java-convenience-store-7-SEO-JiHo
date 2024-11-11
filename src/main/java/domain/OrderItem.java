@@ -30,32 +30,35 @@ public class OrderItem {
         }
     }
 
-    public void setOrderItemQuantity(Products products, Promotions promotions) {
+    public void setOrderItemQuantity(Promotions promotions) {
         Product promotionProduct = products.getPromotionAppliedProductByName(name);
         int promotionAppliedQuantity = promotionProduct.getQuantity();
+        int paidQuantity = promotions.getPromotionByName(promotionProduct.getPromotion()).getPaidQuantity();
+        int freeQuantity = promotions.getPromotionByName(promotionProduct.getPromotion()).getFreeQuantity();
 
         if (promotionAppliedQuantity > 0) {
-            int paidQuantity = promotions.getPromotionByName(promotionProduct.getPromotion()).getPaidQuantity();
-            int freeQuantity = promotions.getPromotionByName(promotionProduct.getPromotion()).getFreeQuantity();
-
-            handleFreeProductOffer(promotionAppliedQuantity, paidQuantity, freeQuantity, products, promotions);
-            handleNoDiscountQuantity(promotionAppliedQuantity, paidQuantity, freeQuantity, products, promotions);
+            handleNoDiscountQuantity(promotionAppliedQuantity, paidQuantity, freeQuantity);
         }
+        handleFreeProductOffer(promotionAppliedQuantity, paidQuantity, freeQuantity);
     }
 
-    public boolean applyPromotionToItem(Products products, Promotions promotions) {
-        String promotionName = products.getPromotionAppliedProductByName(name).getPromotion();
-        int discountQuantity = promotions.getDiscountQuantityIfApplicable(promotionName);
+    public boolean isPromotionEligibleItem(Promotions promotions) {
+        Product product = products.getPromotionAppliedProductByName(name);
+        int discountQuantity = promotions.getDiscountQuantityIfApplicable(product.getPromotion());
+        int promotionEligibleQuantity = (promotions.getPromotionByName(product.getPromotion()).getPaidQuantity() +
+                                         promotions.getPromotionByName(product.getPromotion()).getFreeQuantity());
         if (discountQuantity > 0) {
-            addFreeItemQuantity(itemQuantity /
-                    (promotions.getPromotionByName(promotionName).getPaidQuantity() +
-                     promotions.getPromotionByName(promotionName).getFreeQuantity()));
+            if (product.getQuantity() > promotionEligibleQuantity) {
+                addFreeItemQuantity(itemQuantity /
+                        (promotions.getPromotionByName(product.getPromotion()).getPaidQuantity() +
+                                promotions.getPromotionByName(product.getPromotion()).getFreeQuantity()));
+            }
             return true;
         }
         return false;
     }
 
-    private void handleNoDiscountQuantity(int promotionAppliedQuantity, int paidQuantity, int freeQuantity, Products products, Promotions promotions) {
+    private void handleNoDiscountQuantity(int promotionAppliedQuantity, int paidQuantity, int freeQuantity) {
         if (itemQuantity > promotionAppliedQuantity) {
             int noDiscountQuantity = itemQuantity - promotionAppliedQuantity +
                     promotionAppliedQuantity % (paidQuantity + freeQuantity);
@@ -65,7 +68,7 @@ public class OrderItem {
         }
     }
 
-    private void handleFreeProductOffer(int promotionAppliedQuantity, int paidQuantity, int freeQuantity, Products products, Promotions promotions) {
+    private void handleFreeProductOffer(int promotionAppliedQuantity, int paidQuantity, int freeQuantity) {
         if (itemQuantity <= promotionAppliedQuantity &&
                 itemQuantity % (paidQuantity + freeQuantity) == paidQuantity) {
             if (promotionAppliedQuantity - itemQuantity >= freeQuantity &&
@@ -76,7 +79,7 @@ public class OrderItem {
         }
     }
 
-    public double getItemPrice(Products products) {
+    public double getItemPrice() {
         return products.findProductByName(name).getPrice();
     }
 
@@ -90,6 +93,13 @@ public class OrderItem {
 
     public int getFreeQuantity() {
         return freeItemQuantity;
+    }
+
+    public double getMembershipEligibleAmount(Promotions promotions) {
+        Promotion promotion = promotions.getPromotionByName(products.getPromotionAppliedProductByName(name).getPromotion());
+        int paidQuantity = promotion.getPaidQuantity();
+        int freeQuantity = promotion.getFreeQuantity();
+        return getItemPrice() * (itemQuantity - freeItemQuantity * (paidQuantity + freeQuantity));
     }
 
     public void addFreeItemQuantity(int newFreeQuantity) {

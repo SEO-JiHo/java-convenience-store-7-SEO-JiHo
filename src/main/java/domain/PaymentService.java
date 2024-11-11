@@ -15,10 +15,9 @@ public class PaymentService {
 
     public void applyPromotion() {
         for (OrderItem item : order.getOrderItems()) {
-            if (products.getPromotionAppliedProductByName(item.getName()) != null) {
-                if (item.applyPromotionToItem(products, promotions)) {
-                    item.setOrderItemQuantity(products, promotions);
-                }
+            if (products.getPromotionAppliedProductByName(item.getName()) != null &&
+                    item.isPromotionEligibleItem(promotions)) {
+                item.setOrderItemQuantity(promotions);
             }
         }
     }
@@ -30,7 +29,7 @@ public class PaymentService {
     public double totalPurchaseAmount() {
         double totalAmount = 0;
         for (OrderItem item : order.getOrderItems()) {
-            double itemPrice = item.getQuantity() * item.getItemPrice(products);
+            double itemPrice = item.getQuantity() * item.getItemPrice();
             totalAmount += itemPrice;
         }
 
@@ -40,14 +39,18 @@ public class PaymentService {
     public double promotionalDiscountAmount() {
         double PromotionDiscount = 0;
         for (OrderItem item : order.getOrderItems()) {
-            double discount = item.getFreeQuantity() * item.getItemPrice(products);
+            double discount = item.getFreeQuantity() * item.getItemPrice();
             PromotionDiscount += discount;
         }
         return PromotionDiscount;
     }
 
-    public double membershipDiscountAmount(double totalAmount, double promotionDiscount) {
-        double discount = (totalAmount - promotionDiscount) * MEMBERSHIP_DISCOUNT_RATE;
-        return Math.min(discount, MEMBERSHIP_DISCOUNT_MAX_AMOUNT);
+    public double membershipDiscountAmount() {
+        double membershipDiscount = 0;
+        for (OrderItem item : order.getOrderItems()) {
+            double discount = item.getMembershipEligibleAmount(promotions) * MEMBERSHIP_DISCOUNT_RATE;
+            membershipDiscount += discount;
+        }
+        return Math.min(membershipDiscount, MEMBERSHIP_DISCOUNT_MAX_AMOUNT);
     }
 }
