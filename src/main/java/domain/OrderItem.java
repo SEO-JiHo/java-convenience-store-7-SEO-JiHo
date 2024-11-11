@@ -3,6 +3,7 @@ package domain;
 import view.InputView;
 
 public class OrderItem {
+    private static final int INPUT_TRIGGER_QUANTITY = 1;
     private final String name;
     private int itemQuantity;
     private int freeItemQuantity;
@@ -36,22 +37,21 @@ public class OrderItem {
         int paidQuantity = promotions.getPromotionByName(promotionProduct.getPromotion()).getPaidQuantity();
         int freeQuantity = promotions.getPromotionByName(promotionProduct.getPromotion()).getFreeQuantity();
 
+        handleFreeProductOffer(promotionAppliedQuantity, paidQuantity, freeQuantity);
         if (promotionAppliedQuantity > 0) {
             handleNoDiscountQuantity(promotionAppliedQuantity, paidQuantity, freeQuantity);
         }
-        handleFreeProductOffer(promotionAppliedQuantity, paidQuantity, freeQuantity);
     }
 
     public boolean isPromotionEligibleItem(Promotions promotions) {
         Product product = products.getPromotionAppliedProductByName(name);
-        int discountQuantity = promotions.getDiscountQuantityIfApplicable(product.getPromotion());
-        int promotionEligibleQuantity = (promotions.getPromotionByName(product.getPromotion()).getPaidQuantity() +
-                                         promotions.getPromotionByName(product.getPromotion()).getFreeQuantity());
-        if (discountQuantity > 0) {
-            if (product.getQuantity() > promotionEligibleQuantity) {
-                addFreeItemQuantity(itemQuantity /
-                        (promotions.getPromotionByName(product.getPromotion()).getPaidQuantity() +
-                                promotions.getPromotionByName(product.getPromotion()).getFreeQuantity()));
+        int paidQuantity = promotions.getPromotionByName(product.getPromotion()).getPaidQuantity();
+        int freeQuantity = promotions.getPromotionByName(product.getPromotion()).getFreeQuantity();
+        if (paidQuantity > 0) {
+            freeItemQuantity = (itemQuantity / (paidQuantity + freeQuantity));
+            if (itemQuantity % (paidQuantity + freeQuantity) == paidQuantity) {
+                freeItemQuantity += freeQuantity;
+                itemQuantity += paidQuantity;
             }
             return true;
         }
@@ -69,13 +69,12 @@ public class OrderItem {
     }
 
     private void handleFreeProductOffer(int promotionAppliedQuantity, int paidQuantity, int freeQuantity) {
-        if (itemQuantity <= promotionAppliedQuantity &&
-                itemQuantity % (paidQuantity + freeQuantity) == paidQuantity) {
-            if (promotionAppliedQuantity - itemQuantity >= freeQuantity &&
-                    inputView.requestAddFreeProduct(name)) {
-                addOrderItemQuantity(freeQuantity);
-                addFreeItemQuantity(freeQuantity);
-            }
+        if (itemQuantity <= promotionAppliedQuantity - freeQuantity &&
+                itemQuantity % (paidQuantity + freeQuantity) == INPUT_TRIGGER_QUANTITY &&
+                paidQuantity == 2 &&
+                inputView.requestAddFreeProduct(name)) {
+            itemQuantity += paidQuantity;
+            freeItemQuantity += freeQuantity;
         }
     }
 
@@ -105,10 +104,6 @@ public class OrderItem {
         int paidQuantity = promotion.getPaidQuantity();
         int freeQuantity = promotion.getFreeQuantity();
         return getItemPrice() * (itemQuantity - freeItemQuantity * (paidQuantity + freeQuantity));
-    }
-
-    public void addFreeItemQuantity(int newFreeQuantity) {
-        this.freeItemQuantity += newFreeQuantity;
     }
 
     public void addOrderItemQuantity(int addedQuantity) {
