@@ -45,7 +45,7 @@ public class OrderItem {
 
     public boolean isPromotionEligibleItem(Promotions promotions) {
         Product product = products.getPromotionAppliedProductByName(name);
-        int paidQuantity = promotions.getPromotionByName(product.getPromotion()).getPaidQuantity();
+        int paidQuantity = promotions.getDiscountQuantityIfApplicable(product.getPromotion());
         int freeQuantity = promotions.getPromotionByName(product.getPromotion()).getFreeQuantity();
         if (paidQuantity > 0) {
             freeItemQuantity = (itemQuantity / (paidQuantity + freeQuantity));
